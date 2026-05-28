@@ -8,7 +8,7 @@ export function Reveal({ children, delay = 0, className = "" }: { children: Reac
     if (!el) return;
     const io = new IntersectionObserver(
       ([e]) => { if (e.isIntersecting) { setVisible(true); io.disconnect(); } },
-      { threshold: 0.12 }
+      { threshold: 0.01, rootMargin: "0px 0px 80px 0px" }
     );
     io.observe(el);
     return () => io.disconnect();
@@ -19,8 +19,8 @@ export function Reveal({ children, delay = 0, className = "" }: { children: Reac
       className={className}
       style={{
         opacity: visible ? 1 : 0,
-        transform: visible ? "translateY(0)" : "translateY(24px)",
-        transition: `opacity .9s ease-out ${delay}ms, transform .9s ease-out ${delay}ms`,
+        transform: visible ? "translateY(0)" : "translateY(28px)",
+        transition: `opacity .7s ease-out ${delay}ms, transform .7s ease-out ${delay}ms`,
       }}
     >
       {children}

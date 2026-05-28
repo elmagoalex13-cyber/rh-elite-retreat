@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useRef } from "react";
-import { motion, useScroll, useTransform, useInView } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { Navbar } from "@/components/retreat/Navbar";
 import { Reveal } from "@/components/retreat/Reveal";
 import { RevealText } from "@/components/retreat/RevealText";
@@ -59,7 +59,7 @@ const testimonials = [
 
 function Index() {
   return (
-    <div className="bg-cream text-ink overflow-x-hidden">
+    <div className="bg-cream text-ink" style={{ overflowX: "clip" }}>
       <TrailingCursor />
       <Navbar />
       <Hero />
@@ -134,7 +134,7 @@ function Hero() {
 
 function Method() {
   return (
-    <section id="metodo" className="py-32 lg:py-44 bg-dark-earth relative overflow-hidden">
+    <section id="metodo" className="py-20 lg:py-28 bg-dark-earth relative overflow-hidden">
       <div className="grain-overlay" aria-hidden />
       <div className="max-w-7xl mx-auto px-6 lg:px-12 relative">
         <div id="retiro" className="grid lg:grid-cols-12 gap-12 mb-20 text-cream">
@@ -171,64 +171,100 @@ function Method() {
   );
 }
 
+function ProgramHeader() {
+  return (
+    <div className="mb-10 lg:mb-12">
+      <div className="grid lg:grid-cols-12 gap-8">
+        <div className="lg:col-span-7">
+          <Reveal><div className="eyebrow mb-6">El Programa</div></Reveal>
+          <h2 className="font-serif text-[clamp(2.5rem,5vw,4.5rem)] leading-[1.05]">
+            <RevealText>3 días</RevealText><br />
+            <RevealText delay={150}><span className="serif-italic">de profundidad.</span></RevealText>
+          </h2>
+        </div>
+        <div className="lg:col-span-4 lg:col-start-9 flex items-end">
+          <Reveal delay={250}>
+            <p className="text-sm text-ink/70 leading-relaxed border-l border-gold/40 pl-5">
+              Cada bloque tiene un propósito. No se satura. El tiempo libre es parte del método.
+            </p>
+          </Reveal>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ProgramCard({ d, i }: { d: typeof program[number]; i: number }) {
+  return (
+    <Reveal delay={i * 120}>
+      <div className="bg-cream card-top-gold p-8 relative overflow-hidden h-full">
+        <span className="watermark-number">{d.n}</span>
+        <div className="text-gold text-[11px] tracking-[0.28em] mb-6 relative z-10">— {d.n}</div>
+        <div className="text-[11px] uppercase tracking-[0.22em] text-muted-warm relative z-10">Día · {d.day}</div>
+        <h3 className="font-serif text-2xl mt-2 mb-6 relative z-10">{d.title}</h3>
+        <ul className="space-y-3 relative z-10">
+          {d.items.map(([t, label]) => (
+            <li key={t} className="flex gap-4 text-sm">
+              <span className="text-gold tabular-nums w-12 shrink-0">{t}</span>
+              <span className="text-ink/80">{label}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </Reveal>
+  );
+}
+
 function Program() {
-  const trackRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: containerRef, offset: ["start start", "end end"] });
   const x = useTransform(scrollYProgress, [0, 1], ["0%", "-66.666%"]);
   const barWidth = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
 
   return (
-    <section id="programa" ref={containerRef} className="relative" style={{ height: "300vh" }}>
-      <div className="sticky top-0 h-screen overflow-hidden bg-sand">
-        {/* progress bar */}
-        <motion.div className="absolute top-0 left-0 h-[2px] bg-gold z-20" style={{ width: barWidth }} />
-
-        <div className="max-w-7xl mx-auto px-6 lg:px-12 pt-20 pb-6">
-          <div className="grid lg:grid-cols-12 gap-12 mb-12">
-            <div className="lg:col-span-7">
-              <div className="eyebrow mb-6">El Programa</div>
-              <h2 className="font-serif text-[clamp(2.5rem,5vw,4.5rem)] leading-[1.05]">
-                <span>3 días</span><br />
-                <span className="serif-italic">de profundidad.</span>
-              </h2>
-            </div>
-            <div className="lg:col-span-4 lg:col-start-9 flex items-end">
-              <p className="text-sm text-ink/70 leading-relaxed border-l border-gold/40 pl-5">
-                Cada bloque tiene un propósito. No se satura. El tiempo libre es parte del método.
-              </p>
-            </div>
-          </div>
+    <section id="programa" className="bg-sand">
+      {/* ── Mobile: vertical cards ── */}
+      <div className="lg:hidden px-6 py-20">
+        <ProgramHeader />
+        <div className="flex flex-col gap-6">
+          {program.map((d, i) => <ProgramCard key={d.n} d={d} i={i} />)}
         </div>
+      </div>
 
-        {/* horizontal scroll track */}
-        <div ref={trackRef} className="overflow-hidden px-6 lg:px-12">
-          <motion.div className="flex gap-6 lg:gap-8" style={{ x, width: "300%" }}>
-            {program.map((d) => (
-              <div key={d.n} className="bg-cream card-top-gold p-8 lg:p-10 relative overflow-hidden flex-1 min-h-[420px]">
-                <span className="watermark-number">{d.n}</span>
-                <div className="text-gold text-[11px] tracking-[0.28em] mb-8 relative z-10">— {d.n}</div>
-                <div className="text-[11px] uppercase tracking-[0.22em] text-muted-warm relative z-10">Día · {d.day}</div>
-                <h3 className="font-serif text-3xl mt-2 mb-8 relative z-10">{d.title}</h3>
-                <ul className="space-y-4 relative z-10">
-                  {d.items.map(([t, label]) => (
-                    <li key={t} className="flex gap-5 text-sm">
-                      <span className="text-gold tabular-nums w-12 shrink-0">{t}</span>
-                      <span className="text-ink/80">{label}</span>
-                    </li>
-                  ))}
-                </ul>
+      {/* ── Desktop: sticky horizontal scroll ── */}
+      <div ref={containerRef} className="hidden lg:block relative" style={{ height: "280vh" }}>
+        <div className="sticky top-0 h-screen overflow-hidden bg-sand">
+          <motion.div className="absolute top-0 left-0 h-[2px] bg-gold z-20" style={{ width: barWidth }} />
+          <div className="max-w-7xl mx-auto px-12 pt-20 pb-6">
+            <ProgramHeader />
+          </div>
+          <div className="overflow-hidden px-12">
+            <motion.div className="flex gap-8" style={{ x, width: "300%" }}>
+              {program.map((d, i) => (
+                <div key={d.n} className="bg-cream card-top-gold p-10 relative overflow-hidden flex-1 min-h-[380px]">
+                  <span className="watermark-number">{d.n}</span>
+                  <div className="text-gold text-[11px] tracking-[0.28em] mb-8 relative z-10">— {d.n}</div>
+                  <div className="text-[11px] uppercase tracking-[0.22em] text-muted-warm relative z-10">Día · {d.day}</div>
+                  <h3 className="font-serif text-3xl mt-2 mb-8 relative z-10">{d.title}</h3>
+                  <ul className="space-y-4 relative z-10">
+                    {d.items.map(([t, label]) => (
+                      <li key={t} className="flex gap-5 text-sm">
+                        <span className="text-gold tabular-nums w-12 shrink-0">{t}</span>
+                        <span className="text-ink/80">{label}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </motion.div>
+          </div>
+          <div className="flex justify-center mt-6 gap-6">
+            {program.map((_, i) => (
+              <div key={i} className="text-[10px] uppercase tracking-widest text-muted-warm">
+                {i === 0 ? "← " : ""}{["Viernes","Sábado","Domingo"][i]}{i === 2 ? " →" : ""}
               </div>
             ))}
-          </motion.div>
-        </div>
-
-        <div className="flex justify-center mt-6 gap-3">
-          {program.map((_, i) => (
-            <div key={i} className="text-[10px] uppercase tracking-widest text-muted-warm">
-              {i === 0 ? "← " : ""}{["Viernes","Sábado","Domingo"][i]}{i === 2 ? " →" : ""}
-            </div>
-          ))}
+          </div>
         </div>
       </div>
     </section>
@@ -300,7 +336,7 @@ function Includes() {
 
 function Testimonials() {
   return (
-    <section className="py-24 lg:py-32 bg-cream">
+    <section className="py-16 lg:py-24 bg-cream">
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
         <div className="grid lg:grid-cols-12 gap-12 mb-16">
           <div className="lg:col-span-7">
@@ -340,7 +376,7 @@ function Testimonials() {
 
 function Investment() {
   return (
-    <section id="inversion" className="py-32 lg:py-44 bg-dark-green text-cream relative overflow-hidden">
+    <section id="inversion" className="py-20 lg:py-28 bg-dark-green text-cream relative overflow-hidden">
       <div className="grain-overlay" aria-hidden />
       <div className="max-w-7xl mx-auto px-6 lg:px-12 relative">
         <div className="grid lg:grid-cols-12 gap-12 mb-16">
@@ -400,7 +436,7 @@ function Investment() {
 function Application() {
   const [submitted, setSubmitted] = useState(false);
   return (
-    <section id="solicitud" className="py-32 lg:py-44 bg-sand">
+    <section id="solicitud" className="py-20 lg:py-28 bg-sand">
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
         <div className="grid lg:grid-cols-12 gap-16">
           <div className="lg:col-span-5">

@@ -8,7 +8,7 @@ export function RevealText({ children, delay = 0, className = "" }: { children: 
     if (!el) return;
     const io = new IntersectionObserver(([e]) => {
       if (e.isIntersecting) { setVisible(true); io.disconnect(); }
-    }, { threshold: 0.2 });
+    }, { threshold: 0.01, rootMargin: "0px 0px 80px 0px" });
     io.observe(el);
     return () => io.disconnect();
   }, []);
@@ -18,7 +18,7 @@ export function RevealText({ children, delay = 0, className = "" }: { children: 
         className="reveal-inner"
         style={{
           transform: visible ? "translateY(0)" : "translateY(110%)",
-          transition: `transform 1s cubic-bezier(0.22, 1, 0.36, 1) ${delay}ms`,
+          transition: `transform .9s cubic-bezier(0.22, 1, 0.36, 1) ${delay}ms`,
           display: "inline-block",
         }}
       >
